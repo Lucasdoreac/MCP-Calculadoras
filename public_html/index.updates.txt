@@ -1,0 +1,141 @@
+1. Adicione os seguintes scripts antes do fechamento do body:
+
+    <script src="js/investment-analyzer.js"></script>
+    <script src="js/investment-ui.js"></script>
+
+2. Adicione os seguintes elementos dentro da div #resultadosTab, após o canvas #chartSimulacao:
+
+    <div class="chart-container">
+        <canvas id="chartComposicao"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="chartRisco"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="chartSensibilidade"></canvas>
+    </div>
+
+    <div class="analysis-container">
+        <h3>Análise de Cenários</h3>
+        <div class="scenario-cards">
+            <div class="scenario-card">
+                <h4>Cenário Conservador</h4>
+                <div class="scenario-content"></div>
+            </div>
+            <div class="scenario-card">
+                <h4>Cenário Base</h4>
+                <div class="scenario-content"></div>
+            </div>
+            <div class="scenario-card">
+                <h4>Cenário Otimista</h4>
+                <div class="scenario-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="recommendations-container">
+        <h3>Recomendações Personalizadas</h3>
+        <div class="recommendations-content"></div>
+    </div>
+
+3. Adicione os seguintes estilos CSS dentro da tag <style> existente:
+
+    .analysis-container {
+        margin-top: 30px;
+        padding: 20px;
+        background: #333;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .scenario-cards {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
+
+    .scenario-card {
+        flex: 1;
+        min-width: 250px;
+        padding: 20px;
+        background: #444;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .recommendations-container {
+        margin-top: 30px;
+        padding: 20px;
+        background: #333;
+        border-radius: 8px;
+    }
+
+    .recommendations-content {
+        margin-top: 20px;
+    }
+
+    .chart-container {
+        background: #333;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .detailed-analysis {
+        margin-top: 30px;
+        padding: 20px;
+        background: #333;
+        border-radius: 8px;
+    }
+
+    .detailed-analysis h4 {
+        color: #3498db;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+
+    .detailed-analysis ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .detailed-analysis li {
+        margin-bottom: 10px;
+        padding-left: 20px;
+        position: relative;
+    }
+
+    .detailed-analysis li:before {
+        content: "•";
+        color: #3498db;
+        position: absolute;
+        left: 0;
+    }
+
+    pre {
+        background: #2c2c2c;
+        padding: 15px;
+        border-radius: 5px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        color: #fff;
+        margin: 10px 0;
+    }
+
+    .scenario-card h4 {
+        color: #3498db;
+        margin-bottom: 15px;
+    }
+
+    .scenario-content p {
+        margin: 5px 0;
+        color: #fff;
+    }
+
+    .chart-container canvas {
+        max-height: 400px;
+    }
