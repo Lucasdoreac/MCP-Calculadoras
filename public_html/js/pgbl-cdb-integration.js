@@ -1,0 +1,3 @@
+// Arquivo gerado anteriormente como pgbl-cdb-integration
+const analyzer = new PGBLvsCDBAnalyzer();
+// ... resto do código ...
