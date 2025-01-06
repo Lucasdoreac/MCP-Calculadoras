@@ -1,6 +1,16 @@
 #!/bin/bash
 
-echo "🚀 Iniciando deploy para GitHub..."
+# Cores para output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Função para input da branch
+read -p "💭 Digite o nome da branch (deixe em branco para 'main'): " branch_name
+branch_name=${branch_name:-main}
+
+echo -e "${BLUE}🚀 Iniciando deploy para branch '$branch_name'...${NC}"
 
 # Configurar Git se necessário
 if [ -z "$(git config --global user.name)" ]; then
@@ -46,39 +56,74 @@ yarn-error.log
 *.cache
 EOL
 
-# Remover configuração Git existente se houver
-echo "🧹 Limpando configurações Git anteriores..."
-rm -rf .git
-
-# Inicializar Git
-echo "🎯 Inicializando repositório Git..."
-git init
+# Verificar se já existe um repositório Git
+if [ -d ".git" ]; then
+    echo -e "${BLUE}📂 Repositório Git encontrado${NC}"
+    
+    # Verificar se a branch já existe localmente
+    if git show-ref --verify --quiet refs/heads/$branch_name; then
+        echo -e "${BLUE}🔄 Checkout para branch '$branch_name'${NC}"
+        git checkout $branch_name
+    else
+        echo -e "${BLUE}🌱 Criando nova branch '$branch_name'${NC}"
+        git checkout -b $branch_name
+    fi
+else
+    # Inicializar Git
+    echo -e "${BLUE}🎯 Inicializando novo repositório Git...${NC}"
+    git init
+    git checkout -b $branch_name
+fi
 
 # Adicionar arquivos
-echo "📦 Adicionando arquivos ao Git..."
+echo -e "${BLUE}📦 Adicionando arquivos ao Git...${NC}"
 git add .
 
-# Criar commit inicial
-echo "💾 Criando commit inicial..."
-git commit -m "feat: Implementa calculadoras de investimento com análises detalhadas
+# Solicitar mensagem de commit
+read -p "💬 Digite a mensagem do commit (deixe em branco para mensagem padrão): " commit_message
+commit_message=${commit_message:-"feat: Atualiza calculadoras de investimento"}
 
-- Adiciona simulador principal de investimentos
-- Implementa calculadora PGBL vs CDB
-- Adiciona análise de risco e retorno
-- Inclui gráficos interativos
-- Implementa recomendações personalizadas"
+# Criar commit
+echo -e "${BLUE}💾 Criando commit...${NC}"
+git commit -m "$commit_message"
 
-# Adicionar remote do GitHub
-echo "🔗 Conectando ao GitHub..."
-git remote add origin https://github.com/Lucasdoreac/MCP-Calculadoras.git
+# Verificar se o remote origin já existe
+if git remote | grep -q "^origin$"; then
+    echo -e "${BLUE}🔄 Remote origin já existe${NC}"
+else
+    echo -e "${BLUE}🔗 Adicionando remote origin...${NC}"
+    git remote add origin https://github.com/Lucasdoreac/MCP-Calculadoras.git
+fi
 
-# Mudar para branch main
-echo "🔄 Configurando branch main..."
-git branch -M main
+# Perguntar se deve forçar o push
+read -p "❓ Deseja forçar o push? (s/N): " force_push
+force_push=${force_push:-n}
 
-# Forçar push para GitHub (use com cuidado!)
-echo "⬆️ Enviando arquivos para GitHub..."
-git push -f origin main
+# Enviar para GitHub
+echo -e "${BLUE}⬆️ Enviando arquivos para GitHub...${NC}"
+if [[ $force_push =~ ^[Ss]$ ]]; then
+    echo -e "${RED}⚠️  Atenção: Fazendo force push...${NC}"
+    git push -f origin $branch_name
+else
+    # Tentar pull primeiro
+    echo -e "${BLUE}🔄 Sincronizando com o repositório remoto...${NC}"
+    if git pull origin $branch_name --no-rebase; then
+        git push origin $branch_name
+    else
+        echo -e "${RED}❌ Erro ao sincronizar. Você pode:${NC}"
+        echo "1. Usar force push (cuidado: isso sobrescreverá o conteúdo remoto)"
+        echo "2. Resolver os conflitos manualmente"
+        read -p "Escolha uma opção (1/2): " conflict_option
+        
+        if [ "$conflict_option" = "1" ]; then
+            echo -e "${RED}⚠️  Realizando force push...${NC}"
+            git push -f origin $branch_name
+        else
+            echo -e "${BLUE}🔧 Por favor, resolva os conflitos manualmente e tente novamente${NC}"
+            exit 1
+        fi
+    fi
+fi
 
-echo "✅ Deploy concluído com sucesso!"
-echo "🌐 Acesse: https://github.com/Lucasdoreac/MCP-Calculadoras"
+echo -e "${GREEN}✅ Deploy concluído com sucesso!${NC}"
+echo -e "${GREEN}🌐 Acesse: https://github.com/Lucasdoreac/MCP-Calculadoras/tree/$branch_name${NC}"
